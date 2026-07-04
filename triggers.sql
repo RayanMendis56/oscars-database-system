@@ -111,7 +111,7 @@ END//
 
 DELIMITER ;
 
-# Trigger 5-country table
+# Trigger 5-country table,Country code must be uppercase
 DELIMITER //
 
 CREATE TRIGGER bi_country_uppercase
@@ -123,7 +123,7 @@ END//
 
 DELIMITER ;
 
-# Trigger 6-country table
+# Trigger 6-country table,Prevent duplicate country names
 DELIMITER //
 
 CREATE TRIGGER bi_country_duplicate
@@ -140,6 +140,44 @@ BEGIN
     IF total > 0 THEN
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT='Country already exists.';
+    END IF;
+END//
+
+DELIMITER ;
+
+
+# Trigger 7-Person table,Validate gender
+DELIMITER //
+
+CREATE TRIGGER bi_person_gender
+BEFORE INSERT ON Person
+FOR EACH ROW
+BEGIN
+    IF NEW.Gender NOT IN ('Male','Female') THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT='Gender must be Male or Female.';
+    END IF;
+END//
+
+DELIMITER ;
+
+# Trigger 8-Person Table,Prevent duplicate person names
+DELIMITER //
+
+CREATE TRIGGER bi_person_duplicate
+BEFORE INSERT ON Person
+FOR EACH ROW
+BEGIN
+    DECLARE total INT;
+
+    SELECT COUNT(*)
+    INTO total
+    FROM Person
+    WHERE Person_Name = NEW.Person_Name;
+
+    IF total > 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT='Person already exists.';
     END IF;
 END//
 
