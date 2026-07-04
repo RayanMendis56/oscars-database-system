@@ -71,3 +71,76 @@ BEGIN
 END;
 //
 DELIMITER ;
+
+
+
+# Trigger 3-ceremony table
+DELIMITER //
+
+CREATE TRIGGER bi_ceremony_future_year
+BEFORE INSERT ON Ceremony
+FOR EACH ROW
+BEGIN
+    IF NEW.Year > YEAR(CURDATE()) THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT='Ceremony year cannot be in the future.';
+    END IF;
+END//
+
+DELIMITER ;
+
+# Triggger 4-ceremony table
+DELIMITER //
+
+CREATE TRIGGER bi_ceremony_unique_year
+BEFORE INSERT ON Ceremony
+FOR EACH ROW
+BEGIN
+    DECLARE total INT;
+
+    SELECT COUNT(*)
+    INTO total
+    FROM Ceremony
+    WHERE Year = NEW.Year;
+
+    IF total > 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT='A ceremony already exists for this year.';
+    END IF;
+END//
+
+DELIMITER ;
+
+# Trigger 5-country table
+DELIMITER //
+
+CREATE TRIGGER bi_country_uppercase
+BEFORE INSERT ON Country
+FOR EACH ROW
+BEGIN
+    SET NEW.Country_Code = UPPER(NEW.Country_Code);
+END//
+
+DELIMITER ;
+
+# Trigger 6-country table
+DELIMITER //
+
+CREATE TRIGGER bi_country_duplicate
+BEFORE INSERT ON Country
+FOR EACH ROW
+BEGIN
+    DECLARE total INT;
+
+    SELECT COUNT(*)
+    INTO total
+    FROM Country
+    WHERE Country_Name = NEW.Country_Name;
+
+    IF total > 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT='Country already exists.';
+    END IF;
+END//
+
+DELIMITER ;
