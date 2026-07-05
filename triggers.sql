@@ -228,3 +228,49 @@ END//
 
 DELIMITER ;
 
+# Trigger 11-Award Table,Prevent duplicate award category per ceremony
+DELIMITER //
+
+CREATE TRIGGER bi_award_duplicate
+BEFORE INSERT ON Award
+FOR EACH ROW
+BEGIN
+    DECLARE total INT;
+
+    SELECT COUNT(*)
+    INTO total
+    FROM Award
+    WHERE Ceremony_ID = NEW.Ceremony_ID
+      AND Award_Name = NEW.Award_Name;
+
+    IF total > 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT='Award category already exists for this ceremony.';
+    END IF;
+END//
+
+DELIMITER ;
+
+# Trigger 12-Award Table,Film and person must belong to nominee list
+DELIMITER //
+
+CREATE TRIGGER bi_award_nominee_check
+BEFORE INSERT ON Award
+FOR EACH ROW
+BEGIN
+    DECLARE total INT;
+
+    SELECT COUNT(*)
+    INTO total
+    FROM Nominee
+    WHERE Award_ID = NEW.Award_ID
+      AND Film_ID = NEW.Film_ID
+      AND Person_ID = NEW.Person_ID;
+
+    IF total = 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT='Winner must first exist as a nominee.';
+    END IF;
+END//
+
+DELIMITER ;
