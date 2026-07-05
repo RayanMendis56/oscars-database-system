@@ -274,3 +274,50 @@ BEGIN
 END//
 
 DELIMITER ;
+
+# Trigger 13-Act table,Prevent duplicate acting role
+DELIMITER //
+
+CREATE TRIGGER bi_act_duplicate
+BEFORE INSERT ON Act
+FOR EACH ROW
+BEGIN
+    DECLARE total INT;
+
+    SELECT COUNT(*)
+    INTO total
+    FROM Act
+    WHERE Film_ID = NEW.Film_ID
+      AND Person_ID = NEW.Person_ID
+      AND Role = NEW.Role;
+
+    IF total > 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT='Role already assigned.';
+    END IF;
+END//
+
+DELIMITER ;
+
+# Trigger 14-Act table,Person must exist in nominee table
+DELIMITER //
+
+CREATE TRIGGER bi_act_nominee
+BEFORE INSERT ON Act
+FOR EACH ROW
+BEGIN
+    DECLARE total INT;
+
+    SELECT COUNT(*)
+    INTO total
+    FROM Nominee
+    WHERE Film_ID = NEW.Film_ID
+      AND Person_ID = NEW.Person_ID;
+
+    IF total = 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT='Person must be nominated for this film.';
+    END IF;
+END//
+
+DELIMITER ;
