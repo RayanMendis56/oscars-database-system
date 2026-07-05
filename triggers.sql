@@ -182,3 +182,49 @@ BEGIN
 END//
 
 DELIMITER ;
+
+# Trigger 9-Film Table,Film must match ceremony
+DELIMITER //
+
+CREATE TRIGGER bi_film_valid_ceremony
+BEFORE INSERT ON Film
+FOR EACH ROW
+BEGIN
+    DECLARE total INT;
+
+    SELECT COUNT(*)
+    INTO total
+    FROM Ceremony
+    WHERE Ceremony_ID = NEW.Ceremony_ID;
+
+    IF total = 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT='Invalid ceremony.';
+    END IF;
+END//
+
+DELIMITER ;
+
+# Trigger 10-Film Table,Prevent duplicate film in same ceremony
+DELIMITER //
+
+CREATE TRIGGER bi_film_duplicate
+BEFORE INSERT ON Film
+FOR EACH ROW
+BEGIN
+    DECLARE total INT;
+
+    SELECT COUNT(*)
+    INTO total
+    FROM Film
+    WHERE Film_Title = NEW.Film_Title
+      AND Ceremony_ID = NEW.Ceremony_ID;
+
+    IF total > 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT='Film already exists in this ceremony.';
+    END IF;
+END//
+
+DELIMITER ;
+
