@@ -32,6 +32,17 @@ def print_rows(cursor, headers=None):
     for r in rows:
         print(*r, sep="\t")
 
+
+def read_optional_int(prompt):
+    value = input(prompt).strip()
+    return None if value == "" else int(value)
+
+
+def read_optional_str(prompt):
+    value = input(prompt).strip()
+    return None if value == "" else value
+
+
 connection = connect()
 cursor = connection.cursor()
 
@@ -311,21 +322,77 @@ while True:
         print("+--------------------------------------------------------------------+")
         print("|                            INSERT DATA                             |")
         print("+--------------------------------------------------------------------+")
-        print("\t1. Insert into Nominee")
-        print("\t2. Back")
+        print("\t1. Insert into Ceremony")
+        print("\t2. Insert into Country")
+        print("\t3. Insert into Person")
+        print("\t4. Insert into Film")
+        print("\t5. Insert into Award")
+        print("\t6. Insert into Nominee")
+        print("\t7. Insert into Act")
+        print("\t8. Back")
         try:
             sub = int(input("Enter your choice: "))
         except ValueError:
-            print("Enter 1-2\n"); continue
-        if sub == 2:
+            print("Enter 1-8\n")
             continue
+
+        if sub == 8:
+            continue
+
         if sub == 1:
+            Ceremony_ID = int(input("Ceremony_ID : "))
+            Year = int(input("Year : "))
+            sql = "INSERT INTO Ceremony (Ceremony_ID, Year) VALUES (%s, %s);"
+            cursor.execute(sql, (Ceremony_ID, Year))
+            connection.commit()
+            print("New Ceremony entered successfully.\n")
+
+        elif sub == 2:
+            Country_ID = int(input("Country_ID : "))
+            Country_name = input("Country_name : ").strip()
+            Country_code = input("Country_code : ").strip()
+            sql = "INSERT INTO Country (Country_ID, Country_name, Country_code) VALUES (%s, %s, %s);"
+            cursor.execute(sql, (Country_ID, Country_name, Country_code))
+            connection.commit()
+            print("New Country entered successfully.\n")
+
+        elif sub == 3:
+            Person_name = input("Person_name : ").strip()
+            Gender = input("Gender (M/F) : ").strip()
+            Country_ID = read_optional_int("Country_ID (leave blank for NULL) : ")
+            sql = "INSERT INTO Person (Person_name, Gender, Country_ID) VALUES (%s, %s, %s);"
+            cursor.execute(sql, (Person_name, Gender, Country_ID))
+            connection.commit()
+            print("New Person entered successfully.\n")
+
+        elif sub == 4:
+            Film_title = input("Film_title : ").strip()
+            genre = input("genre : ").strip()
+            language = input("language (leave blank for NULL) : ").strip() or None
+            Ceremony_ID = read_optional_int("Ceremony_ID (leave blank for NULL) : ")
+            sql = "INSERT INTO Film (Film_title, genre, language, Ceremony_ID) VALUES (%s, %s, %s, %s);"
+            cursor.execute(sql, (Film_title, genre, language, Ceremony_ID))
+            connection.commit()
+            print("New Film entered successfully.\n")
+
+        elif sub == 5:
+            Award_ID = int(input("Award_ID : "))
+            Award_name = input("Award_name : ").strip()
+            Ceremony_ID = int(input("Ceremony_ID : "))
+            Film_ID = read_optional_int("Film_ID (leave blank for NULL) : ")
+            Person_ID = read_optional_int("Person_ID (leave blank for NULL) : ")
+            sql = "INSERT INTO Award (Award_ID, Award_name, Ceremony_ID, Film_ID, Person_ID) VALUES (%s, %s, %s, %s, %s);"
+            cursor.execute(sql, (Award_ID, Award_name, Ceremony_ID, Film_ID, Person_ID))
+            connection.commit()
+            print("New Award entered successfully.\n")
+
+        elif sub == 6:
             Nominee_ID = int(input("Nominee_ID : "))
-            Award_ID   = int(input("Award_ID   : "))
-            Film_ID    = int(input("Film_ID    : "))
-            Person_ID  = int(input("Person_ID  : "))
-            Is_Winner  = int(input("Is_Winner (0/1): "))
-            Category   = input("Category   : ").strip()
+            Award_ID = int(input("Award_ID : "))
+            Film_ID = int(input("Film_ID : "))
+            Person_ID = int(input("Person_ID : "))
+            Is_Winner = int(input("Is_Winner (0/1): "))
+            Category = input("Category : ").strip()
 
             sql = """
                 INSERT INTO Nominee (Nominee_ID, Award_ID, Film_ID, Person_ID, Is_Winner, Category)
@@ -334,6 +401,15 @@ while True:
             cursor.execute(sql, (Nominee_ID, Award_ID, Film_ID, Person_ID, Is_Winner, Category))
             connection.commit()
             print("New Nominee entered successfully.\n")
+
+        elif sub == 7:
+            Person_ID = int(input("Person_ID : "))
+            Film_ID = int(input("Film_ID : "))
+            Role = input("Role : ").strip()
+            sql = "INSERT INTO Act (Person_ID, Film_ID, Role) VALUES (%s, %s, %s);"
+            cursor.execute(sql, (Person_ID, Film_ID, Role))
+            connection.commit()
+            print("New Act entry entered successfully.\n")
 
     elif option == 6:
         break
