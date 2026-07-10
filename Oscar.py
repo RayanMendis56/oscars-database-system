@@ -60,12 +60,13 @@ while True:
     print("| 4. Advanced features (Views/Queries/Procedures)                    |")
     print("| 5. Insert data                                                     |")
     print("| 6. Update data                                                     |")
-    print("| 7. Exit                                                            |")
+    print("| 7. Delete data                                                     |")
+    print("| 8. Exit                                                            |")
     print("+--------------------------------------------------------------------+")
     try:
         option = int(input("Enter your choice : "))
     except ValueError:
-        print("Enter a number 1-7.\n")
+        print("Enter a number 1-8.\n")
         continue
     print()
 
@@ -572,6 +573,70 @@ while True:
             print("Act entry updated successfully.\n")
 
     elif option == 7:
+        print("+--------------------------------------------------------------------+")
+        print("|                            DELETE DATA                             |")
+        print("+--------------------------------------------------------------------+")
+        print("\t1. Delete from Ceremony")
+        print("\t2. Delete from Country")
+        print("\t3. Delete from Person")
+        print("\t4. Delete from Film")
+        print("\t5. Delete from Award")
+        print("\t6. Delete from Nominee")
+        print("\t7. Delete from Act")
+        print("\t8. Back")
+        try:
+            sub = int(input("Enter your choice: "))
+        except ValueError:
+            print("Enter 1-8\n")
+            continue
+
+        if sub == 8:
+            continue
+
+        if sub == 1:
+            Ceremony_ID = int(input("Ceremony_ID to delete : "))
+            cursor.execute("DELETE FROM Ceremony WHERE Ceremony_ID = %s;", (Ceremony_ID,))
+            connection.commit()
+            print("Ceremony deleted successfully.\n")
+
+        elif sub == 2:
+            Country_ID = int(input("Country_ID to delete : "))
+            cursor.execute("DELETE FROM Country WHERE Country_ID = %s;", (Country_ID,))
+            connection.commit()
+            print("Country deleted successfully.\n")
+
+        elif sub == 3:
+            Person_ID = int(input("Person_ID to delete : "))
+            cursor.execute("DELETE FROM Person WHERE Person_ID = %s;", (Person_ID,))
+            connection.commit()
+            print("Person deleted successfully.\n")
+
+        elif sub == 4:
+            Film_ID = int(input("Film_ID to delete : "))
+            cursor.execute("DELETE FROM Film WHERE Film_ID = %s;", (Film_ID,))
+            connection.commit()
+            print("Film deleted successfully.\n")
+
+        elif sub == 5:
+            Award_ID = int(input("Award_ID to delete : "))
+            cursor.execute("DELETE FROM Award WHERE Award_ID = %s;", (Award_ID,))
+            connection.commit()
+            print("Award deleted successfully.\n")
+
+        elif sub == 6:
+            Nominee_ID = int(input("Nominee_ID to delete : "))
+            cursor.execute("DELETE FROM Nominee WHERE Nominee_ID = %s;", (Nominee_ID,))
+            connection.commit()
+            print("Nominee deleted successfully.\n")
+
+        elif sub == 7:
+            Person_ID = int(input("Person_ID to delete : "))
+            Film_ID = int(input("Film_ID to delete : "))
+            cursor.execute("DELETE FROM Act WHERE Person_ID = %s AND Film_ID = %s;", (Person_ID, Film_ID))
+            connection.commit()
+            print("Act entry deleted successfully.\n")
+
+    elif option == 8:
         break
 
 # cleanup
