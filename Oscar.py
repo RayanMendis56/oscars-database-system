@@ -59,12 +59,13 @@ while True:
     print("| 3. Show data in tables                                             |")
     print("| 4. Advanced features (Views/Queries/Procedures)                    |")
     print("| 5. Insert data                                                     |")
-    print("| 6. Exit                                                            |")
+    print("| 6. Update data                                                     |")
+    print("| 7. Exit                                                            |")
     print("+--------------------------------------------------------------------+")
     try:
         option = int(input("Enter your choice : "))
     except ValueError:
-        print("Enter a number 1-6.\n")
+        print("Enter a number 1-7.\n")
         continue
     print()
 
@@ -412,6 +413,165 @@ while True:
             print("New Act entry entered successfully.\n")
 
     elif option == 6:
+        print("+--------------------------------------------------------------------+")
+        print("|                            UPDATE DATA                             |")
+        print("+--------------------------------------------------------------------+")
+        print("\t1. Update Ceremony")
+        print("\t2. Update Country")
+        print("\t3. Update Person")
+        print("\t4. Update Film")
+        print("\t5. Update Award")
+        print("\t6. Update Nominee")
+        print("\t7. Update Act")
+        print("\t8. Back")
+        try:
+            sub = int(input("Enter your choice: "))
+        except ValueError:
+            print("Enter 1-8\n")
+            continue
+
+        if sub == 8:
+            continue
+
+        if sub == 1:
+            Ceremony_ID = int(input("Ceremony_ID to update : "))
+            cursor.execute("SELECT Year FROM Ceremony WHERE Ceremony_ID = %s;", (Ceremony_ID,))
+            row = cursor.fetchone()
+            if not row:
+                print("No such Ceremony.\n")
+                continue
+            Year = read_optional_int("New Year (leave blank to keep current) : ")
+            if Year is None:
+                Year = row[0]
+            cursor.execute("UPDATE Ceremony SET Year = %s WHERE Ceremony_ID = %s;", (Year, Ceremony_ID))
+            connection.commit()
+            print("Ceremony updated successfully.\n")
+
+        elif sub == 2:
+            Country_ID = int(input("Country_ID to update : "))
+            cursor.execute("SELECT Country_name, Country_code FROM Country WHERE Country_ID = %s;", (Country_ID,))
+            row = cursor.fetchone()
+            if not row:
+                print("No such Country.\n")
+                continue
+            Country_name = read_optional_str("New Country_name (leave blank to keep current) : ")
+            Country_code = read_optional_str("New Country_code (leave blank to keep current) : ")
+            if Country_name is None:
+                Country_name = row[0]
+            if Country_code is None:
+                Country_code = row[1]
+            cursor.execute("UPDATE Country SET Country_name = %s, Country_code = %s WHERE Country_ID = %s;", (Country_name, Country_code, Country_ID))
+            connection.commit()
+            print("Country updated successfully.\n")
+
+        elif sub == 3:
+            Person_ID = int(input("Person_ID to update : "))
+            cursor.execute("SELECT Person_name, Gender, Country_ID FROM Person WHERE Person_ID = %s;", (Person_ID,))
+            row = cursor.fetchone()
+            if not row:
+                print("No such Person.\n")
+                continue
+            Person_name = read_optional_str("New Person_name (leave blank to keep current) : ")
+            Gender = read_optional_str("New Gender (leave blank to keep current) : ")
+            Country_ID = read_optional_int("New Country_ID (leave blank to keep current) : ")
+            if Person_name is None:
+                Person_name = row[0]
+            if Gender is None:
+                Gender = row[1]
+            if Country_ID is None:
+                Country_ID = row[2]
+            cursor.execute("UPDATE Person SET Person_name = %s, Gender = %s, Country_ID = %s WHERE Person_ID = %s;", (Person_name, Gender, Country_ID, Person_ID))
+            connection.commit()
+            print("Person updated successfully.\n")
+
+        elif sub == 4:
+            Film_ID = int(input("Film_ID to update : "))
+            cursor.execute("SELECT Film_title, genre, language, Ceremony_ID FROM Film WHERE Film_ID = %s;", (Film_ID,))
+            row = cursor.fetchone()
+            if not row:
+                print("No such Film.\n")
+                continue
+            Film_title = read_optional_str("New Film_title (leave blank to keep current) : ")
+            genre = read_optional_str("New genre (leave blank to keep current) : ")
+            language = read_optional_str("New language (leave blank to keep current) : ")
+            Ceremony_ID = read_optional_int("New Ceremony_ID (leave blank to keep current) : ")
+            if Film_title is None:
+                Film_title = row[0]
+            if genre is None:
+                genre = row[1]
+            if language is None:
+                language = row[2]
+            if Ceremony_ID is None:
+                Ceremony_ID = row[3]
+            cursor.execute("UPDATE Film SET Film_title = %s, genre = %s, language = %s, Ceremony_ID = %s WHERE Film_ID = %s;", (Film_title, genre, language, Ceremony_ID, Film_ID))
+            connection.commit()
+            print("Film updated successfully.\n")
+
+        elif sub == 5:
+            Award_ID = int(input("Award_ID to update : "))
+            cursor.execute("SELECT Award_name, Ceremony_ID, Film_ID, Person_ID FROM Award WHERE Award_ID = %s;", (Award_ID,))
+            row = cursor.fetchone()
+            if not row:
+                print("No such Award.\n")
+                continue
+            Award_name = read_optional_str("New Award_name (leave blank to keep current) : ")
+            Ceremony_ID = read_optional_int("New Ceremony_ID (leave blank to keep current) : ")
+            Film_ID = read_optional_int("New Film_ID (leave blank to keep current) : ")
+            Person_ID = read_optional_int("New Person_ID (leave blank to keep current) : ")
+            if Award_name is None:
+                Award_name = row[0]
+            if Ceremony_ID is None:
+                Ceremony_ID = row[1]
+            if Film_ID is None:
+                Film_ID = row[2]
+            if Person_ID is None:
+                Person_ID = row[3]
+            cursor.execute("UPDATE Award SET Award_name = %s, Ceremony_ID = %s, Film_ID = %s, Person_ID = %s WHERE Award_ID = %s;", (Award_name, Ceremony_ID, Film_ID, Person_ID, Award_ID))
+            connection.commit()
+            print("Award updated successfully.\n")
+
+        elif sub == 6:
+            Nominee_ID = int(input("Nominee_ID to update : "))
+            cursor.execute("SELECT Award_ID, Film_ID, Person_ID, Is_Winner, Category FROM Nominee WHERE Nominee_ID = %s;", (Nominee_ID,))
+            row = cursor.fetchone()
+            if not row:
+                print("No such Nominee.\n")
+                continue
+            Award_ID = read_optional_int("New Award_ID (leave blank to keep current) : ")
+            Film_ID = read_optional_int("New Film_ID (leave blank to keep current) : ")
+            Person_ID = read_optional_int("New Person_ID (leave blank to keep current) : ")
+            Is_Winner = read_optional_int("New Is_Winner (0/1, leave blank to keep current) : ")
+            Category = read_optional_str("New Category (leave blank to keep current) : ")
+            if Award_ID is None:
+                Award_ID = row[0]
+            if Film_ID is None:
+                Film_ID = row[1]
+            if Person_ID is None:
+                Person_ID = row[2]
+            if Is_Winner is None:
+                Is_Winner = row[3]
+            if Category is None:
+                Category = row[4]
+            cursor.execute("UPDATE Nominee SET Award_ID = %s, Film_ID = %s, Person_ID = %s, Is_Winner = %s, Category = %s WHERE Nominee_ID = %s;", (Award_ID, Film_ID, Person_ID, Is_Winner, Category, Nominee_ID))
+            connection.commit()
+            print("Nominee updated successfully.\n")
+
+        elif sub == 7:
+            Person_ID = int(input("Person_ID to update : "))
+            Film_ID = int(input("Film_ID to update : "))
+            cursor.execute("SELECT Role FROM Act WHERE Person_ID = %s AND Film_ID = %s;", (Person_ID, Film_ID))
+            row = cursor.fetchone()
+            if not row:
+                print("No such Act entry.\n")
+                continue
+            Role = read_optional_str("New Role (leave blank to keep current) : ")
+            if Role is None:
+                Role = row[0]
+            cursor.execute("UPDATE Act SET Role = %s WHERE Person_ID = %s AND Film_ID = %s;", (Role, Person_ID, Film_ID))
+            connection.commit()
+            print("Act entry updated successfully.\n")
+
+    elif option == 7:
         break
 
 # cleanup
